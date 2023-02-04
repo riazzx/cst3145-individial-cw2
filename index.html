@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Vue CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.13/dist/vue.js"></script>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@1,900&display=swap" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <title>After School</title>
+</head>
+<body>
+    <!-- mount vue instance -->
+    <div id="app">
+      <!-- navbar -->
+        <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="index.html">After School</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                  </li>
+                </ul>
+
+                <div class="col-md-8">
+                  <form class="d-flex" role="search">
+                    <input class="form-control me-4 bg-light" type="search" placeholder="Search" aria-label="Search" v-model="searchValue" id="search-input">
+                </div>
+                  
+                </form>
+                <ul class="navbar-nav  me-2">
+                    <li class="nav-item">
+                      <a class="nav-link" v-on:click="showCart" v-if="cartItemCount >= 1">  Cart <span class="badge bg-secondary">{{cartItemCount}}</span></a>
+                      <a class="nav-link" v-else> Cart</a>
+                    </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+
+          <!-- show lessons page -->
+          <div v-if="showLessons">
+            <!-- banner -->
+          <div class="card text-bg-dark" id="banner">
+            <div class="card-img-overlay" >
+              <h5 id="banner-title" class="card-title">AFTER SCHOOL</h5>
+              <p  id="banner-text" class="card-text">Classes for your kids to learn exciting, new things after school.</p>
+              <div class="text-center">
+                <button id="banner-button" type="button" class="btn   btn-lg " onClick="document.getElementById('lessons').scrollIntoView();">Book a Lesson</button>
+              </div>  
+            </div>
+          </div>
+
+         
+
+         <!-- sort and filter toolbar -->
+          <div  class="btn-toolbar justify-content-evenly" role="toolbar">
+            
+               <p class="sort-label">Sort By:</p>
+            <select name="sortBy" id="sort-btn" v-model="sortBy" class="form-select-lg   " aria-label=".form-select-lg example">
+        
+              <option class="text-center" value="subject">Subject</option>
+              <option class="text-center" value="location">Location</option>
+              <option class="text-center" value="availability">Availability</option>
+              <option class="text-center" value="price">Price</option>
+             
+            </select>
+            
+           
+             <p class="sort-label"> Sort In:</p>
+            <button id="sort-btn" type="button" class="btn btn-warning" v-on:click="ascending = !ascending" class="sort-button">
+               <span v-if="ascending" class="fa fa-sort-up">Ascending</span>
+              <span v-else class="fa fa-sort-down">Descending</span>
+            </button>
+           
+           
+          </div>
+          
+         
+
+
+          <!-- lessons cards  -->
+          <div class="row row-cols-1 row-cols-md-3 g-3" id="lessons">
+              <!-- for loop to display all lessons -->
+            <div v-for="lesson in sortedLessons">
+                <div id="lesson" class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                      <div class="col-md-6 p-4">
+                        <img v-bind:src="lesson.image" class="img-fluid rounded-start" alt="Math Lesson Icon">
+                      </div>
+                      <div class="col-md-6">
+                        <div class="card-body">
+                          <h5 class="card-title text-light" v-text="lesson.title"></h5>
+                          <p class="card-text text-light"><small class="text-light--muted"  v-text="lesson.description"></small></p>
+                          <p class="card-text text-light" >Cost: <b>{{lesson.price}}</b>  dhs/month.</p>
+                          <p class="card-text text-light"><small class="text-light--muted"  >Location: {{lesson.location}}</small></p>
+                          <p class="card-text text-light"><small class="text-light--muted">Spaces: {{lesson.availableLessons}}</small></p>
+                          <button v-on:click="addToCart(lesson)" v-if='canAddToCart(lesson)' type="button" class="btn btn-outline-warning"><span class="fas fa-cart-plus"></span> Add to cart</button>
+                          <button disabled="disabled" v-else type="button" class="btn btn-secondary"><span class="fas fa-cart-plus"></span> Add to cart</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+          <!-- show cart -->
+          <div v-else>
+            <!-- checkout banner -->
+            <div class="card text-bg-dark" id="banner">
+              <div class="card-img-overlay" >
+                <h5 id="banner-title" class="card-title">CHECKOUT</h5>
+              </div>
+            </div>
+
+            <!-- show cart items -->
+            <div  class="row row-cols-2 row-cols-md-2 g-3" id="lessons" v-if="this.cart.length > 0">
+              <div class="row row-cols-1 row-cols-md-1 g-2">
+
+              <!-- lessons added in cart -->
+              <div v-for="lesson in this.cart">
+                <div id="lesson" class="card mb-1">
+                  <div class="row g-0">
+                    <div class="col-md-4 p-4">
+                      <img v-bind:src="lesson.image" class="img-fluid rounded-start" alt="Math Lesson Icon">
+                    </div>
+                    <div class="col-md-6">
+                      <div class="card-body">
+                        <h5 class="card-title text-light" v-text="lesson.title"></h5>
+                        <p class="card-text text-light" >Cost: <b>{{lesson.price}}</b>  dhs/month.</p>
+                        <p class="card-text text-light"><small class="text-light--muted"  >Location: {{lesson.location}}</small></p>
+                        <button v-on:click="removeFromCart(lesson)" type="button" class="btn btn-outline-danger"> Remove from cart</button>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              </div>
+            </div>
+
+            <!-- checkout form -->
+            <div>
+              <form id="checkout-form">
+                <h5>Checkout</h5>
+                <div class="mb-3 mt-3">
+                  <label for="name" class="form-label">Name:</label>
+                  <input type="text" v-model="order.name" class="form-control"  placeholder="Enter name" >
+                </div>
+                <div class="mb-3">
+                  <label for="pnumber" class="form-label">Phone Number:</label>
+                  <input type="text" v-model="order.number" class="form-control" id="pnumber" placeholder="Enter Phone Number"  >
+                </div>
+                <p class="text-danger">{{order.validationMessage}}</p>
+               
+                <button v-if="formValidated" v-on:click="placeOrder"  class="btn btn-primary">Place Order</button>
+                <button v-else  disabled="disabled" class="btn btn-primary">Place Order</button>
+              </form>
+            </div>
+             
+            </div>
+
+            <!-- show cart empty if all items removed from cart -->
+            <div class="card text-bg-dark" id="cart-empty" v-else>
+              <div  class="card-img-overlay" >
+                <h5 id="banner-title" class="card-title">OOPS.. THE CART IS EMPTY</h5>
+                <button  type="button"   v-on:click="showCart" class="btn btn-lg btn-warning align-content-center">Add Lessons</button>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+          <!-- FOOTER -->
+          <footer>
+            <div class="copyright">
+              <p id="copyr">&copy 2022 - CST3145 Coursework 1 by zx</p>
+            </div>
+            <div class="social">
+              <a id="link" href="#" class="support">Contact Us</a>
+              <a id="link" href="#" class="face">f</a>
+              <a id="link" href="#" class="tweet">t</a>
+              <a id="link" href="#" class="linked">in</a>
+            </div>
+          </footer>
+         
+ 
+          
+    </div>
+
+    <!-- import lessons.js -->
+    <script src="lessons.js"></script>
+    <script>
+      // create new vue instance
+        var app = new Vue ({
+            el: '#app',
+            data: {
+                searchValue: '',
+                lessons: lessons,
+                ascending: true,
+                sortBy: 'subject',
+                cart: [],
+                showLessons: true,
+                order: {
+                  name: '',
+                  number: '',
+                  validationMessage: ""
+                }
+            },
+            methods: {
+              // toggle between cart and homepage
+              showCart() {
+                this.showLessons = this.showLessons ? false : true;
+              },
+              // add lesson to cart
+              addToCart(lesson){
+                this.cart.push(lesson);
+                lesson.availableLessons--;
+              },
+              // check if item can be added to cart
+              canAddToCart(lesson) {
+                return lesson.availableLessons > this.cartCount(lesson.id)
+              },
+              // check number of items in cart
+              cartCount(id) {
+                let count = 0;
+                for(let i=0; i < this.cart.length; i++){
+                  if(this.cart[i]===id){
+                    count++;
+                  }
+                }
+                return count;
+              },
+              // remove lesson from cart
+              removeFromCart(lesson) {
+                let count = 1;
+                lesson.availableLessons++;
+                for(let i = 0; i <= this.cart.length; i++){
+                  if(this.cart[i].id === lesson.id){
+                    this.cart.splice(i,1);
+                    break;
+                  }
+                }
+              },
+              // show order placed alert
+              placeOrder() {
+                alert("Order Placed Successfully!");
+              }
+            },
+            computed: {
+              // check number of items in cart
+              cartItemCount() {
+                return this.cart.length || ''
+              },
+              // regex to check checkout form to enable place order button
+              formValidated(){
+                 const letters = /^[A-Za-z]+$/;
+                 const numbers = /^[0-9]+$/;
+
+                 if (this.order.name.match(letters) && this.order.number.match(numbers)) {
+                  return true;
+                 }             
+                },
+              // sort lessons
+              sortedLessons() {
+                let lessonsArray = this.lessons.slice(0);
+
+                 // Process search input
+                if (this.searchValue != '' && this.searchValue) {
+                  lessonsArray = lessonsArray.filter((item) => {
+                    return item.title
+                      .toUpperCase()
+                        .includes(this.searchValue.toUpperCase()) 
+                        || item.location
+                        .toUpperCase()
+                        .includes(this.searchValue.toUpperCase())
+                  })
+                }
+                
+                  lessonsArray = lessonsArray.sort((a,b) => {
+                    if (this.sortBy === 'subject') {
+                      let fa = a.title.toLowerCase(), fb = b.title.toLowerCase();
+                      if (fa < fb) {
+                        return -1
+                      }
+                    if (fa > fb) {
+                      return 1
+                    }
+                    return 0
+                  } else if (this.sortBy === 'price') {
+                    return a.price - b.price
+                  } else if (this.sortBy === 'availability') {
+                    return a.availableLessons - b.availableLessons
+                  } else if(this.sortBy === 'location') {
+                    let fa = a.location.toLowerCase(), fb = b.location.toLowerCase();
+                      if (fa < fb) {
+                        return -1
+                      }
+                    if (fa > fb) {
+                      return 1
+                    }
+                    return 0
+                  }
+                
+                })
+
+                if(!this.ascending) {
+                  lessonsArray.reverse()
+                }
+                return lessonsArray
+              }
+            }
+        })
+    </script>
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+</body>
+</html>
