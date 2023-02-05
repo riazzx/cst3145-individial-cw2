@@ -17,28 +17,53 @@ app.use((req,res,next)=> {
 
 // logger middleware
 app.use((req,res,next)=> {
-    console.log("In comes a " + req.method + " request to" + req.url)
+    console.log("In comes a: " + req.method + " request to: " + req.url)
     next()
 })
 
 
+// connect mongodb 
 MongoClient.connect('mongodb+srv://riazzx:Riazzx.1121@cluster0.ygr7yjf.mongodb.net/?retryWrites=true&w=majority', (err,client) => {
     db = client.db('afterschool')
 })
+
 
 app.get('/', (req,res,next)=> {
     res.send("go to a collection, for ex. /collectionName")
 })
 
+// callback trigger
 app.param('collectionName', (req,res,next,collectionName) => {
     req.collection  = db.collection(collectionName)
     return next()
 })
 
+
+// get all lessons
 app.get('/collection/:collectionName', (req,res,next)=>{
     req.collection.find({}).toArray((e, results) =>{
         if (e) return next(e)
         res.send(results)
+    })
+})
+
+// post order to orders collection
+app.post('/collection/:collectionName', (req,res,next) => {
+    req.collection.insertOne(req.body, (e, results) => {
+        if (e) return next(e)
+        res.send(results.ops)
+    })
+})
+
+// put request to update available lessons
+app.put('/collection/:collectionName/:id', (req,res,next)=>{
+    req.collection.updateOne(
+        {_id: new ObjectID(req.params.id)},
+        {$set: req.body},
+        {safe: true, multi: false},
+        (e,results) => {
+        if (e) return next(e)
+        res.send( (results.modifiedCount === 1)  ? {msg: 'success'} : {msg: 'error'})
     })
 })
 
@@ -56,6 +81,7 @@ app.get('/collection/:collectionName', (req,res,next)=>{
 
 // put to update lesson spaces
 
+
 // static file middleware
 app.use(function(req,res, next) {
     var filePath = path.join(__dirname, "assets", req.url)
@@ -72,10 +98,10 @@ app.use(function(req,res, next) {
         }
     })
 })
-
+// static file middleware for not found
 app.use(function(req,res){
     res.status(404)
-    res.send("Error! File not found!")
+    res.send("Error! Not found!")
 })
 
 
