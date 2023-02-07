@@ -1,6 +1,7 @@
 const express = require('express')
 var path = require('path')
 var fs = require('fs')
+var cors = require('cors')
 const MongoClient = require('mongodb').MongoClient
 const ObjectID = require('mongodb').ObjectId
 
@@ -9,6 +10,8 @@ app.use(express.json())
 app.set('port', 3000)
 const port = 3000
 let db
+
+app.use(cors())
 
 app.use((req,res,next)=> {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -29,7 +32,7 @@ MongoClient.connect('mongodb+srv://riazzx:Riazzx.1121@cluster0.ygr7yjf.mongodb.n
 
 
 app.get('/', (req,res,next)=> {
-    res.send("go to a collection, for ex. /collectionName")
+    res.send("go to a collection, for ex. collection/collectionName")
 })
 
 // callback trigger
@@ -47,11 +50,21 @@ app.get('/collection/:collectionName', (req,res,next)=>{
     })
 })
 
+// search 
+
 // post order to orders collection
 app.post('/collection/:collectionName', (req,res,next) => {
     req.collection.insertOne(req.body, (e, results) => {
         if (e) return next(e)
         res.send(results.ops)
+    })
+})
+
+// get lesson using id
+app.get('/collection/:collectionName/:id', (req,res,next)=>{
+    req.collection.findOne({_id: new ObjectID(req.params.id)}, (e,results) => {
+        if (e) return next(e)
+        res.send(results)
     })
 })
 
@@ -67,20 +80,20 @@ app.put('/collection/:collectionName/:id', (req,res,next)=>{
     })
 })
 
-// search
-// app.get('/collection/:collectionName/:id', (req,res) => {
-//     var search = req.params.id
-//     console.log("searched for: " + search)
-
-//     req.collection.find({})
-// })
-
-// post
-
-// search with id
-
-// put to update lesson spaces
-
+app.get('/collection/:collectionName/search/:searchValue', (req,res) => {
+    const { searchValue } = req.params
+    req.collection.find({}).toArray((err,results) => {
+        if (err) return next(err)
+        const lessons = results.filter(lesson => {
+            return (
+                lesson.title.toLowerCase().match(searchValue.toLowerCase()) 
+                ||
+                lesson.location.toLowerCase().match(searchValue.toLowerCase())
+            )
+        })
+        res.send(lessons)
+    }) 
+})
 
 // static file middleware
 app.use(function(req,res, next) {
@@ -98,7 +111,7 @@ app.use(function(req,res, next) {
         }
     })
 })
-// static file middleware for not found
+// middleware for not found
 app.use(function(req,res){
     res.status(404)
     res.send("Error! Not found!")
@@ -107,6 +120,6 @@ app.use(function(req,res){
 
 
 
-app.listen(3000, ()=> {
+app.listen(port, ()=> {
     console.log(`Server listening on port ${port}`)
 })
