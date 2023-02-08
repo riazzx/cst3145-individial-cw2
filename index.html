@@ -15,7 +15,8 @@
     <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
-
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.png">
+    
     <title>After School</title>
 </head>
 <body>
@@ -93,9 +94,9 @@
 
 
           <!-- lessons cards  -->
-          <div class="row row-cols-1 row-cols-md-3 g-3" id="lessons">
+          <div class="row row-cols-1 row-cols-md-3 g-3" id="lessons"  v-if="searchValue == ''">
               <!-- for loop to display all lessons -->
-            <div v-for="lesson in sortedLessons">
+            <div v-for="lesson in sortedLessons" >
                 <div id="lesson" class="card mb-3" style="max-width: 540px;">
                     <div class="row g-0">
                       <div class="col-md-6 p-4">
@@ -116,6 +117,31 @@
                 </div>
             </div>
           </div>
+
+          <!-- tesst -->
+          <div class="row row-cols-1 row-cols-md-3 g-3" id="lessons" >
+            <!-- for loop to display all lessons -->
+          <div v-for="lesson in search" >
+              <div id="lesson" class="card mb-3" style="max-width: 540px;">
+                  <div class="row g-0">
+                    <div class="col-md-6 p-4">
+                      <img v-bind:src="lesson.image" class="img-fluid rounded-start" alt="Math Lesson Icon">
+                    </div>
+                    <div class="col-md-6">
+                      <div class="card-body">
+                        <h5 class="card-title text-light" v-text="lesson.title"></h5>
+                        <p class="card-text text-light"><small class="text-light--muted"  v-text="lesson.description"></small></p>
+                        <p class="card-text text-light" >Cost: <b>{{lesson.price}}</b>  dhs/month.</p>
+                        <p class="card-text text-light"><small class="text-light--muted"  >Location: {{lesson.location}}</small></p>
+                        <p class="card-text text-light"><small class="text-light--muted">Spaces: {{lesson.availableLessons}}</small></p>
+                        <button v-on:click="addToCart(lesson)" v-if='canAddToCart(lesson)' type="button" class="btn btn-outline-warning"><span class="fas fa-cart-plus"></span> Add to cart</button>
+                        <button disabled="disabled" v-else type="button" class="btn btn-secondary"><span class="fas fa-cart-plus"></span> Add to cart</button>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        </div>
         </div>
 
           <!-- show cart -->
@@ -206,14 +232,15 @@
     </div>
 
     <!-- import lessons.js -->
-    <script src="lessons.js"></script>
+    <!-- <script src="lessons.js"></script> -->
     <script>
       // create new vue instance
         var app = new Vue ({
             el: '#app',
             data: {
                 searchValue: '',
-                lessons: lessons,
+                lessons: [],
+                searchLessons: [],
                 ascending: true,
                 sortBy: 'subject',
                 cart: [],
@@ -224,6 +251,16 @@
                   validationMessage: ""
                 }
             },
+            created: function(){
+              //fetching the lessons from server
+              fetch('http://localhost:3000/collection/lessons').then(
+                function(response){
+                  response.json().then(
+                    function(json){
+                      app.lessons = json;
+                    });
+                  });
+              },
             methods: {
               // toggle between cart and homepage
               showCart() {
@@ -262,7 +299,82 @@
               // show order placed alert
               placeOrder() {
                 alert("Order Placed Successfully!");
+                addOrder(this.order.name,this.order.number,this.cart);
+                updateLessons(this.cart)
+
+                this.order.name = ""
+                this.order.number = ""
+                this.cart.splice(0, this.cart.length)
+
+                function addOrder(name,number,cartOrder){
+                  let final_cart = []
+
+                  for(i=0;i<cartOrder.length;i++){
+                    const newOrder = {"id": cartOrder[i]._id, "availableLessons": 1}
+                    if(final_cart.length == 0){
+                      final_cart.push(newOrder)
+                    } else {
+                      for (a=0 ; final_cart.length ; a++){
+                        if(final_cart[a].id == cartOrder[a]._id){
+                          final_cart[a].availableLessons = final_cart[a].availableLessons+1;
+                          break
+                        } else {
+                          final_cart.push(newOrder)
+                          break
+                        }
+                      }
+                    }
+                  }
+
+
+                  let order = {"name":name, "number": number, "order": final_cart}
+
+                  fetch("http://localhost:3000/collection/order", {
+                    method: 'POST',
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(order),
+                  }).then(response => response.text()).then(responseJSON => {
+                    updateLessons(cartOrder)
+                    // location.reload()
+                  })
+                }
+
+                function updateLessons(cart){
+                  const final_cart=[]
+                  for(i=0;i<cart.length;i++){
+                    const uniqueOrder = {"id": cart[i]._id, "availableLessons": cart[i].availableLessons}
+                    if(final_cart.length == 0){
+                      final_cart.push(uniqueOrder)
+                    } else{
+                      for(a=0;a<final_cart.length;a++){
+                        if(final_cart[a].id == cart[i]._id){
+                          final_cart[a].availableLessons = cart[i].availableLessons
+                          break
+                        } else {
+                          final_cart.push(uniqueOrder)
+                          break
+                        }
+                      }
+                    }
+                  }
+                  for(i=0;i<final_cart.length;i++){
+                    fetch("http://localhost:3000/collection/lessons/"+ final_cart[i].id, {
+                                  method : 'PUT',
+                                  headers: {
+                                      "Content-Type" : "application/json"
+                                  },
+                                  body: JSON.stringify({"availableLessons" : final_cart[i].availableLessons}),
+                              }).then(response => response.text()).then(responseJSON => {
+                                  console.log(responseJSON);
+                              });
+                  }
+                }
+
+                
               }
+              
             },
             computed: {
               // check number of items in cart
@@ -278,21 +390,76 @@
                   return true;
                  }             
                 },
+
+                search() {
+                  lessonsArray2 = []
+
+                  if(this.searchValue != '' && this.searchValue){
+                  fetch('http://localhost:3000/collection/lessons/' + this.searchValue, {
+                    headers : {
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json'
+                    }
+                  }).then(
+                    function (res) {
+                      res.json().then(
+                        function(json) {
+                          app.searchLessons = JSON.parse(JSON.stringify(json))
+                          lessonsArray2.push(app.searchLessons)
+                          console.log(json)
+                          console.log(lessonsArray2)
+                          console.log(app.searchLessons)
+                          return this.lessonsArray2
+                        }
+                      )
+                    }
+                  )
+                }
+                console.log(lessonsArray2)
+                // return lessonsArray2
+                
+                },
               // sort lessons
               sortedLessons() {
                 let lessonsArray = this.lessons.slice(0);
+                // console.log(lessonsArray)
+                
+                let searchValue = this.searchValue.toLowerCase()
 
                  // Process search input
-                if (this.searchValue != '' && this.searchValue) {
-                  lessonsArray = lessonsArray.filter((item) => {
-                    return item.title
-                      .toUpperCase()
-                        .includes(this.searchValue.toUpperCase()) 
-                        || item.location
-                        .toUpperCase()
-                        .includes(this.searchValue.toUpperCase())
-                  })
-                }
+                // if (this.searchValue != '' && this.searchValue) {
+                //   lessonsArray = lessonsArray.filter((item) => {
+                //     return item.title
+                //       .toUpperCase()
+                //         .includes(this.searchValue.toUpperCase()) 
+                //         || item.location
+                //         .toUpperCase()
+                //         .includes(this.searchValue.toUpperCase())
+                //   })
+                //   console.log(lessonsArray)
+                // }
+
+                // if(this.searchValue != '' && this.searchValue){
+                //   fetch('http://localhost:3000/collection/lessons/' + searchValue, {
+                //     headers : {
+                //       'Content-Type': 'application/json',
+                //       'Accept': 'application/json'
+                //     }
+                //   }).then(
+                //     function (res) {
+                //       res.json().then(
+                //         function(json) {
+                //           lessonsArray = JSON.parse(JSON.stringify(json))
+                //           console.log(lessonsArray)
+                //           console.log(this.lessons)
+                //           return json
+                //         }
+                //       )
+                //     }
+                //   )
+                // }
+
+
                 
                   lessonsArray = lessonsArray.sort((a,b) => {
                     if (this.sortBy === 'subject') {
