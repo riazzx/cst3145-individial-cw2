@@ -121,7 +121,7 @@
           <!-- tesst -->
           <div class="row row-cols-1 row-cols-md-3 g-3" id="lessons" >
             <!-- for loop to display all lessons -->
-          <div v-for="lesson in search" >
+          <div v-for="lesson in searchLessons" >
               <div id="lesson" class="card mb-3" style="max-width: 540px;">
                   <div class="row g-0">
                     <div class="col-md-6 p-4">
@@ -374,7 +374,61 @@
 
                 
               }
+              // search() {
+              //     // lessonsArray2 = []
+              //     // this.searchValue = this.searchValue.toLowerCase()
+
+              //     if(this.searchValue != '' && this.searchValue){
+              //     // fetch('http://localhost:3000/collection/lessons/' + this.searchValue, {
+              //     //   headers : {
+              //     //     'Content-Type': 'application/json',
+              //     //     'Accept': 'application/json'
+              //     //   }
+              //     // }).then(
+              //     //   function (res) {
+              //     //     res.json().then(
+              //     //       function(json) {
+              //     //         app.searchLessons = JSON.parse(JSON.stringify(json))
+              //     //         // lessonsArray2.push(app.searchLessons)
+              //     //         console.log(json)
+              //     //         // console.log(lessonsArray2)
+              //     //         console.log(this.searchLessons)
+              //     //         return this.searchLessons
+              //     //       }
+              //     //     )
+              //     //   }
+              //     // )
+              //       // const displayLessons = []
+              //     fetch('http://localhost:3000/collection/lessons/' + this.searchValue).then(
+              //       function(res) {
+              //       res.json().then(
+              //         function(data) {
+              //         for(i = 0; i< data.length; i++){
+              //           this.displayLesson = data[i]
+                        
+              //         }
+              //       })
+              //     })
+              //     // return displayLessons
+              //   }
+              //   // console.log(lessonsArray2)
+              //   // return lessonsArray2
+                
+              //   },
               
+            },
+            watch: {
+              searchValue() {
+                if(this.searchValue) {
+                  fetch('http://localhost:3000/collection/lessons/' + this.searchValue)
+                  .then(response => response.json())
+                  .then(data => {
+                    this.searchLessons = data
+                  })
+                } else {
+                  this.searchLessons = []
+                }
+              }
             },
             computed: {
               // check number of items in cart
@@ -391,40 +445,53 @@
                  }             
                 },
 
-                search() {
-                  lessonsArray2 = []
+                // search() {
+                //   // lessonsArray2 = []
+                //   // this.searchValue = this.searchValue.toLowerCase()
 
-                  if(this.searchValue != '' && this.searchValue){
-                  fetch('http://localhost:3000/collection/lessons/' + this.searchValue, {
-                    headers : {
-                      'Content-Type': 'application/json',
-                      'Accept': 'application/json'
-                    }
-                  }).then(
-                    function (res) {
-                      res.json().then(
-                        function(json) {
-                          app.searchLessons = JSON.parse(JSON.stringify(json))
-                          lessonsArray2.push(app.searchLessons)
-                          console.log(json)
-                          console.log(lessonsArray2)
-                          console.log(app.searchLessons)
-                          return this.lessonsArray2
-                        }
-                      )
-                    }
-                  )
-                }
-                console.log(lessonsArray2)
-                // return lessonsArray2
+                //   if(this.searchValue != '' && this.searchValue){
+                //   // fetch('http://localhost:3000/collection/lessons/' + this.searchValue, {
+                //   //   headers : {
+                //   //     'Content-Type': 'application/json',
+                //   //     'Accept': 'application/json'
+                //   //   }
+                //   // }).then(
+                //   //   function (res) {
+                //   //     res.json().then(
+                //   //       function(json) {
+                //   //         app.searchLessons = JSON.parse(JSON.stringify(json))
+                //   //         // lessonsArray2.push(app.searchLessons)
+                //   //         console.log(json)
+                //   //         // console.log(lessonsArray2)
+                //   //         console.log(this.searchLessons)
+                //   //         return this.searchLessons
+                //   //       }
+                //   //     )
+                //   //   }
+                //   // )
+                //     const displayLessons = []
+                //   fetch('http://localhost:3000/collection/lessons/' + this.searchValue).then(
+                //     function(res) {
+                //     res.json().then(
+                //       function(data) {
+                //       for(i = 0; i< data.length; i++){
+                //         displayLessons.push(data[i])
+                        
+                //       }
+                //     })
+                //   })
+                //   return displayLessons
+                // }
+                // // console.log(lessonsArray2)
+                // // return lessonsArray2
                 
-                },
+                // },
               // sort lessons
               sortedLessons() {
-                let lessonsArray = this.lessons.slice(0);
+                let lessonsArray = this.lessons.slice(0)
                 // console.log(lessonsArray)
                 
-                let searchValue = this.searchValue.toLowerCase()
+                // let searchValue = this.searchValue.toLowerCase()
 
                  // Process search input
                 // if (this.searchValue != '' && this.searchValue) {
@@ -458,7 +525,23 @@
                 //     }
                 //   )
                 // }
-
+                // if(this.searchValue != '' && this.searchValue){
+                  
+                //     const displayLessons = []
+                //   fetch('http://localhost:3000/collection/lessons/' + this.searchValue).then(
+                //     function(res) {
+                //     res.json().then(
+                //       function(data) {
+                //       for(i = 0; i< data.length; i++){
+                //         lessonsArray.push(data[i])
+                //         // console.log(lessonsArray)
+                        
+                //       }
+                //     })
+                //   })
+                //   console.log(lessonsArray)
+                //   // return lessonsArray
+                // }
 
                 
                   lessonsArray = lessonsArray.sort((a,b) => {
