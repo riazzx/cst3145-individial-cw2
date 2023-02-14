@@ -118,7 +118,7 @@
             </div>
           </div>
 
-          <!-- tesst -->
+          <!-- search results -->
           <div class="row row-cols-1 row-cols-md-3 g-3" id="lessons" >
             <!-- for loop to display all lessons -->
           <div v-for="lesson in searchLessons" >
@@ -231,8 +231,6 @@
           
     </div>
 
-    <!-- import lessons.js -->
-    <!-- <script src="lessons.js"></script> -->
     <script>
       // create new vue instance
         var app = new Vue ({
@@ -296,16 +294,19 @@
                   }
                 }
               },
-              // show order placed alert
+              // place order 
               placeOrder() {
+                
                 alert("Order Placed Successfully!");
                 checkoutOrder(this.order.name,this.order.number,this.cart);
                 updateSpaces(this.cart)
 
+                // empty fields
                 this.order.name = ""
                 this.order.number = ""
                 this.cart.splice(0, this.cart.length)
 
+                // checkout order
                 function checkoutOrder(name,number,cart){
                   let userCart = []
 
@@ -328,6 +329,7 @@
 
                   let order = {"name":name, "number": number, "order": userCart}
 
+                  // fetch to post order
                   fetch("http://localhost:3000/collection/order", {
                     method: 'POST',
                     headers: {
@@ -339,6 +341,7 @@
                   })
                 }
 
+                // update spaces
                 function updateSpaces(cart){
                   const userCart=[]
                   for(i=0;i<cart.length;i++){
@@ -357,6 +360,7 @@
                       }
                     }
                   }
+                  // fetch to update lesson spaces
                   for(i=0;i<userCart.length;i++){
                     fetch("http://localhost:3000/collection/lessons/"+ userCart[i].id, {
                                   method : 'PUT',
@@ -375,6 +379,7 @@
               
             },
             watch: {
+              // search as you type feature
               searchValue() {
                 if(this.searchValue) {
                   fetch('http://localhost:3000/collection/lessons/' + this.searchValue)
@@ -402,6 +407,7 @@
                  }             
                 },
 
+                // sort lessons array
               sortedLessons() {
                 let lessonsArray = this.lessons.slice(0)
                 
