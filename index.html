@@ -15,7 +15,7 @@
     <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" type="image/x-icon" href="/static/favicon.png">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     
     <title>After School</title>
 </head>
@@ -306,16 +306,16 @@
                 this.order.number = ""
                 this.cart.splice(0, this.cart.length)
 
-                function checkoutOrder(name,number,cartOrder){
+                function checkoutOrder(name,number,cart){
                   let userCart = []
 
-                  for(i=0;i<cartOrder.length;i++){
-                    const newOrder = {"id": cartOrder[i]._id, "availableLessons": 1}
+                  for(i=0;i<cart.length;i++){
+                    const newOrder = {"id": cart[i]._id, "availableLessons": 1}
                     if(userCart.length == 0){
                       userCart.push(newOrder)
                     } else {
                       for (a=0 ; userCart.length ; a++){
-                        if(userCart[a].id == cartOrder[a]._id){
+                        if(userCart[a].id == cart[i]._id){
                           userCart[a].availableLessons = userCart[a].availableLessons+1;
                           break
                         } else {
@@ -325,7 +325,7 @@
                       }
                     }
                   }
-
+                  console.log(userCart)
 
                   let order = {"name":name, "number": number, "order": userCart}
 
@@ -337,7 +337,6 @@
                     body: JSON.stringify(order),
                   }).then(response => response.text()).then(responseJSON => {
                     updateSpaces(cartOrder)
-                    // location.reload()
                   })
                 }
 

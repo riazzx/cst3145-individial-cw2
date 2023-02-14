@@ -70,7 +70,7 @@ app.put('/collection/:collectionName/:id', (req,res,next)=>{
     })
 })
 
-// search 
+// search
 app.get('/collection/:collectionName/:searchValue', (req,res) => {
     const { searchValue } = req.params
     req.collection.find({}).toArray((err,results) => {
