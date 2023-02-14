@@ -33,8 +33,6 @@ MongoClient.connect('mongodb+srv://riazzx:Riazzx.1121@cluster0.ygr7yjf.mongodb.n
 
 app.get('/', (req,res)=> {
     res.send("go to a collection, for ex. collection/collectionName")
-    // res.sendFile(path.join(__dirname, '/static/index.html'))
-    // app.use(express.static(path.join(__dirname, '/static')));
 })
 
 // callback trigger
@@ -52,31 +50,6 @@ app.get('/collection/:collectionName', (req,res,next)=>{
     })
 })
 
-// search 
-// app.get('/collection/:collectionName/:s', (req,res) => {
-//     let search = req.params.s
-//     console.log(search)
-
-//     req.collection.find({$or: [ { title: {$regex: '^'+search, $options: "i"}}, {location: {$regex: '^' + search, $options: "i"}}]}).toArray((e, results) => {
-//         if (e) return console.log(e)
-//         res.send(results)
-//     })
-// })
-
-// app.get('collection/:collectionName/search/:searchValue', (req,res) => {
-//     const { searchValue } = req.params
-//     req.collection.find({}).toArray((err,results) => {
-//         if (err) return next(err)
-//         const lessons = results.filter(lesson => {
-//             return (
-//                 lesson.title.toLowerCase().match(searchValue.toLowerCase()) ||
-//                 lesson.location.toLowerCase().match(searchValue.toLowerCase())
-//             )
-//         })
-//         res.send(lessons)
-//     })
-// })
-
 // post order to orders collection
 app.post('/collection/:collectionName', (req,res,next) => {
     req.collection.insertOne(req.body, (e, results) => {
@@ -84,14 +57,6 @@ app.post('/collection/:collectionName', (req,res,next) => {
         res.send(results.ops)
     })
 })
-
-// get lesson using id
-// app.get('/collection/:collectionName/:id', (req,res,next)=>{
-//     req.collection.findOne({_id: new ObjectID(req.params.id)}, (e,results) => {
-//         if (e) return next(e)
-//         res.send(results)
-//     })
-// })
 
 // put request to update available lessons
 app.put('/collection/:collectionName/:id', (req,res,next)=>{
@@ -105,6 +70,7 @@ app.put('/collection/:collectionName/:id', (req,res,next)=>{
     })
 })
 
+// search 
 app.get('/collection/:collectionName/:searchValue', (req,res) => {
     const { searchValue } = req.params
     req.collection.find({}).toArray((err,results) => {
@@ -122,7 +88,7 @@ app.get('/collection/:collectionName/:searchValue', (req,res) => {
 
 // static file middleware
 app.use(function(req,res, next) {
-    var filePath = path.join(__dirname, "assets", req.url)
+    var filePath = path.join(__dirname, "static", req.url)
     fs.stat(filePath, function(err, fileInfo){
         if(err) {
             next()

@@ -15,7 +15,7 @@
     <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.png">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.png">
     
     <title>After School</title>
 </head>
@@ -374,47 +374,6 @@
 
                 
               }
-              // search() {
-              //     // lessonsArray2 = []
-              //     // this.searchValue = this.searchValue.toLowerCase()
-
-              //     if(this.searchValue != '' && this.searchValue){
-              //     // fetch('http://localhost:3000/collection/lessons/' + this.searchValue, {
-              //     //   headers : {
-              //     //     'Content-Type': 'application/json',
-              //     //     'Accept': 'application/json'
-              //     //   }
-              //     // }).then(
-              //     //   function (res) {
-              //     //     res.json().then(
-              //     //       function(json) {
-              //     //         app.searchLessons = JSON.parse(JSON.stringify(json))
-              //     //         // lessonsArray2.push(app.searchLessons)
-              //     //         console.log(json)
-              //     //         // console.log(lessonsArray2)
-              //     //         console.log(this.searchLessons)
-              //     //         return this.searchLessons
-              //     //       }
-              //     //     )
-              //     //   }
-              //     // )
-              //       // const displayLessons = []
-              //     fetch('http://localhost:3000/collection/lessons/' + this.searchValue).then(
-              //       function(res) {
-              //       res.json().then(
-              //         function(data) {
-              //         for(i = 0; i< data.length; i++){
-              //           this.displayLesson = data[i]
-                        
-              //         }
-              //       })
-              //     })
-              //     // return displayLessons
-              //   }
-              //   // console.log(lessonsArray2)
-              //   // return lessonsArray2
-                
-              //   },
               
             },
             watch: {
@@ -445,104 +404,8 @@
                  }             
                 },
 
-                // search() {
-                //   // lessonsArray2 = []
-                //   // this.searchValue = this.searchValue.toLowerCase()
-
-                //   if(this.searchValue != '' && this.searchValue){
-                //   // fetch('http://localhost:3000/collection/lessons/' + this.searchValue, {
-                //   //   headers : {
-                //   //     'Content-Type': 'application/json',
-                //   //     'Accept': 'application/json'
-                //   //   }
-                //   // }).then(
-                //   //   function (res) {
-                //   //     res.json().then(
-                //   //       function(json) {
-                //   //         app.searchLessons = JSON.parse(JSON.stringify(json))
-                //   //         // lessonsArray2.push(app.searchLessons)
-                //   //         console.log(json)
-                //   //         // console.log(lessonsArray2)
-                //   //         console.log(this.searchLessons)
-                //   //         return this.searchLessons
-                //   //       }
-                //   //     )
-                //   //   }
-                //   // )
-                //     const displayLessons = []
-                //   fetch('http://localhost:3000/collection/lessons/' + this.searchValue).then(
-                //     function(res) {
-                //     res.json().then(
-                //       function(data) {
-                //       for(i = 0; i< data.length; i++){
-                //         displayLessons.push(data[i])
-                        
-                //       }
-                //     })
-                //   })
-                //   return displayLessons
-                // }
-                // // console.log(lessonsArray2)
-                // // return lessonsArray2
-                
-                // },
-              // sort lessons
               sortedLessons() {
                 let lessonsArray = this.lessons.slice(0)
-                // console.log(lessonsArray)
-                
-                // let searchValue = this.searchValue.toLowerCase()
-
-                 // Process search input
-                // if (this.searchValue != '' && this.searchValue) {
-                //   lessonsArray = lessonsArray.filter((item) => {
-                //     return item.title
-                //       .toUpperCase()
-                //         .includes(this.searchValue.toUpperCase()) 
-                //         || item.location
-                //         .toUpperCase()
-                //         .includes(this.searchValue.toUpperCase())
-                //   })
-                //   console.log(lessonsArray)
-                // }
-
-                // if(this.searchValue != '' && this.searchValue){
-                //   fetch('http://localhost:3000/collection/lessons/' + searchValue, {
-                //     headers : {
-                //       'Content-Type': 'application/json',
-                //       'Accept': 'application/json'
-                //     }
-                //   }).then(
-                //     function (res) {
-                //       res.json().then(
-                //         function(json) {
-                //           lessonsArray = JSON.parse(JSON.stringify(json))
-                //           console.log(lessonsArray)
-                //           console.log(this.lessons)
-                //           return json
-                //         }
-                //       )
-                //     }
-                //   )
-                // }
-                // if(this.searchValue != '' && this.searchValue){
-                  
-                //     const displayLessons = []
-                //   fetch('http://localhost:3000/collection/lessons/' + this.searchValue).then(
-                //     function(res) {
-                //     res.json().then(
-                //       function(data) {
-                //       for(i = 0; i< data.length; i++){
-                //         lessonsArray.push(data[i])
-                //         // console.log(lessonsArray)
-                        
-                //       }
-                //     })
-                //   })
-                //   console.log(lessonsArray)
-                //   // return lessonsArray
-                // }
-
                 
                   lessonsArray = lessonsArray.sort((a,b) => {
                     if (this.sortBy === 'subject') {
