@@ -11,6 +11,7 @@ app.set('port', 3000)
 const port = 3000
 let db
 
+// middleware for cors
 app.use(cors())
 
 app.use((req,res,next)=> {
