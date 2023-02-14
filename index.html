@@ -299,27 +299,27 @@
               // show order placed alert
               placeOrder() {
                 alert("Order Placed Successfully!");
-                addOrder(this.order.name,this.order.number,this.cart);
-                updateLessons(this.cart)
+                checkoutOrder(this.order.name,this.order.number,this.cart);
+                updateSpaces(this.cart)
 
                 this.order.name = ""
                 this.order.number = ""
                 this.cart.splice(0, this.cart.length)
 
-                function addOrder(name,number,cartOrder){
-                  let final_cart = []
+                function checkoutOrder(name,number,cartOrder){
+                  let userCart = []
 
                   for(i=0;i<cartOrder.length;i++){
                     const newOrder = {"id": cartOrder[i]._id, "availableLessons": 1}
-                    if(final_cart.length == 0){
-                      final_cart.push(newOrder)
+                    if(userCart.length == 0){
+                      userCart.push(newOrder)
                     } else {
-                      for (a=0 ; final_cart.length ; a++){
-                        if(final_cart[a].id == cartOrder[a]._id){
-                          final_cart[a].availableLessons = final_cart[a].availableLessons+1;
+                      for (a=0 ; userCart.length ; a++){
+                        if(userCart[a].id == cartOrder[a]._id){
+                          userCart[a].availableLessons = userCart[a].availableLessons+1;
                           break
                         } else {
-                          final_cart.push(newOrder)
+                          userCart.push(newOrder)
                           break
                         }
                       }
@@ -327,7 +327,7 @@
                   }
 
 
-                  let order = {"name":name, "number": number, "order": final_cart}
+                  let order = {"name":name, "number": number, "order": userCart}
 
                   fetch("http://localhost:3000/collection/order", {
                     method: 'POST',
@@ -336,36 +336,36 @@
                     },
                     body: JSON.stringify(order),
                   }).then(response => response.text()).then(responseJSON => {
-                    updateLessons(cartOrder)
+                    updateSpaces(cartOrder)
                     // location.reload()
                   })
                 }
 
-                function updateLessons(cart){
-                  const final_cart=[]
+                function updateSpaces(cart){
+                  const userCart=[]
                   for(i=0;i<cart.length;i++){
                     const uniqueOrder = {"id": cart[i]._id, "availableLessons": cart[i].availableLessons}
-                    if(final_cart.length == 0){
-                      final_cart.push(uniqueOrder)
+                    if(userCart.length == 0){
+                      userCart.push(uniqueOrder)
                     } else{
-                      for(a=0;a<final_cart.length;a++){
-                        if(final_cart[a].id == cart[i]._id){
-                          final_cart[a].availableLessons = cart[i].availableLessons
+                      for(a=0;a<userCart.length;a++){
+                        if(userCart[a].id == cart[i]._id){
+                          userCart[a].availableLessons = cart[i].availableLessons
                           break
                         } else {
-                          final_cart.push(uniqueOrder)
+                          userCart.push(uniqueOrder)
                           break
                         }
                       }
                     }
                   }
-                  for(i=0;i<final_cart.length;i++){
-                    fetch("http://localhost:3000/collection/lessons/"+ final_cart[i].id, {
+                  for(i=0;i<userCart.length;i++){
+                    fetch("http://localhost:3000/collection/lessons/"+ userCart[i].id, {
                                   method : 'PUT',
                                   headers: {
                                       "Content-Type" : "application/json"
                                   },
-                                  body: JSON.stringify({"availableLessons" : final_cart[i].availableLessons}),
+                                  body: JSON.stringify({"availableLessons" : userCart[i].availableLessons}),
                               }).then(response => response.text()).then(responseJSON => {
                                   console.log(responseJSON);
                               });
