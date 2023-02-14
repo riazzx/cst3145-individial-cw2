@@ -3,7 +3,5 @@
 
 #Links
 
-- [Vue.js App] the link to your GitHub Repository                                   -
-- [Vue.js App] the link to your GitHub Pages from where the app can directly run    -
-- [Express.js App] the link to your GitHub Repository                               -
-- [AWS Express.js App] the link to the AWS route that returns all the lessons       -
+- Link to your GitHub Repository  - https://github.com/riazzx/cst3145-individial-cw2
+- GitHub Pages Link               - https://riazzx.github.io/cst3145-individial-cw2/
